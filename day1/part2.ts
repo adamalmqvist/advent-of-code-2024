@@ -1,26 +1,24 @@
-const rawFile = await Deno.readTextFile("input.txt")
-const rows = rawFile.split(/\n/)
+const rawFile = await Deno.readTextFile("input.txt");
+const rows = rawFile.split(/\n/);
 
-const leftList = []
-const rightMap: {[key: number]: number} = {}
+const leftList = [];
+const rightMap: { [key: number]: number } = {};
 
 for (let i = 0; i < rows.length; i++) {
-    const [right, left] = rows[i].split('   ')
+    const [right, left] = rows[i].split("   ");
     if (rightMap[Number(right)]) {
-        rightMap[Number(right)]++
+        rightMap[Number(right)]++;
     } else {
-        rightMap[Number(right)] = 1
+        rightMap[Number(right)] = 1;
     }
-    leftList.push(Number(left))
+    leftList.push(Number(left));
 }
 
-
-
-let res = 0
+let res = 0;
 for (let i = 0; i < rows.length; i++) {
-    const leftVal = leftList[i]
-    const rightCount = rightMap[leftVal] || 0
-    res += leftVal * rightCount
+    const leftVal = leftList[i];
+    const rightCount = rightMap[leftVal] || 0;
+    res += leftVal * rightCount;
 }
 
-console.log(res)
+console.log(res);

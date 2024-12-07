@@ -1,4 +1,4 @@
-const rawFile = await Deno.readTextFile("input.txt")
+const rawFile = await Deno.readTextFile("input.txt");
 
 const findStartingPosition = (rows: string[]): [number, number] => {
     const width = rows[0].length;
@@ -6,7 +6,7 @@ const findStartingPosition = (rows: string[]): [number, number] => {
 
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            if (rows[y][x] === '^') {
+            if (rows[y][x] === "^") {
                 return [x, y];
             }
         }
@@ -14,7 +14,12 @@ const findStartingPosition = (rows: string[]): [number, number] => {
     throw new Error("No starting position found");
 };
 
-const calculateJumpDestination = (rows: string[], x: number, y: number, dindex: number): [number, number, number | null] | null => {
+const calculateJumpDestination = (
+    rows: string[],
+    x: number,
+    y: number,
+    dindex: number,
+): [number, number, number | null] | null => {
     const width = rows[0].length;
     const height = rows.length;
     const directions: [number, number][] = [[1, 0], [0, 1], [-1, 0], [0, -1]];
@@ -38,7 +43,7 @@ const calculateJumpDestination = (rows: string[], x: number, y: number, dindex: 
 };
 
 const solveGuardPatrol = (input: string): number => {
-    const rows = input.trim().split('\n').map(line => line.trim());
+    const rows = input.trim().split("\n").map((line) => line.trim());
     const width = rows[0].length;
     const height = rows.length;
 
@@ -50,15 +55,23 @@ const solveGuardPatrol = (input: string): number => {
         ">": [1, 0],
         "<": [-1, 0],
         "^": [0, -1],
-        "v": [0, 1]
+        "v": [0, 1],
     };
 
-    const createJumpMap = (): Record<string, [number, number, number | null] | null> => {
+    const createJumpMap = (): Record<
+        string,
+        [number, number, number | null] | null
+    > => {
         const map: Record<string, [number, number, number | null] | null> = {};
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 for (let di = 0; di < directions.length; di++) {
-                    map[`${x},${y},${di}`] = calculateJumpDestination(rows, x, y, di);
+                    map[`${x},${y},${di}`] = calculateJumpDestination(
+                        rows,
+                        x,
+                        y,
+                        di,
+                    );
                 }
             }
         }
@@ -67,7 +80,12 @@ const solveGuardPatrol = (input: string): number => {
 
     const jumpMap = createJumpMap();
 
-    const calculateJumpWithBlockPatch = (x: number, y: number, dindex: number, blockPatch?: [number, number]): [number, number, number | null] | null => {
+    const calculateJumpWithBlockPatch = (
+        x: number,
+        y: number,
+        dindex: number,
+        blockPatch?: [number, number],
+    ): [number, number, number | null] | null => {
         const dest = jumpMap[`${x},${y},${dindex}`];
         if (blockPatch && dest) {
             const [fx, fy] = dest;
@@ -82,7 +100,10 @@ const solveGuardPatrol = (input: string): number => {
         return dest;
     };
 
-    const jumpIntoBlock = (dindex: number, blockPatch: [number, number]): [number, number, number | null] => {
+    const jumpIntoBlock = (
+        dindex: number,
+        blockPatch: [number, number],
+    ): [number, number, number | null] => {
         const [dx, dy] = directions[dindex];
         const [bx, by] = blockPatch;
         return [bx - dx, by - dy, (dindex + 1) % 4];
@@ -90,15 +111,20 @@ const solveGuardPatrol = (input: string): number => {
 
     const findPathLoop = (blockPatch?: [number, number]): boolean => {
         let x = sx, y = sy;
-        let dindex: number | null = directions.findIndex(d => 
-            d[0] === directionMap[rows[y][x]][0] && 
+        let dindex: number | null = directions.findIndex((d) =>
+            d[0] === directionMap[rows[y][x]][0] &&
             d[1] === directionMap[rows[y][x]][1]
         );
 
         const visited = new Set<string>();
 
         while (true) {
-            const jumpResult = calculateJumpWithBlockPatch(x, y, dindex, blockPatch);
+            const jumpResult = calculateJumpWithBlockPatch(
+                x,
+                y,
+                dindex,
+                blockPatch,
+            );
             if (!jumpResult) return false;
 
             [x, y, dindex] = jumpResult;
@@ -113,7 +139,7 @@ const solveGuardPatrol = (input: string): number => {
     let loopPositions = 0;
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            if ((x !== sx || y !== sy) && rows[y][x] !== '#') {
+            if ((x !== sx || y !== sy) && rows[y][x] !== "#") {
                 if (findPathLoop([x, y])) {
                     loopPositions++;
                 }
